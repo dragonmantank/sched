@@ -15,6 +15,17 @@ class ProcessQueue extends Command
 {
     protected static $defaultName = 'queue:process';
 
+    /**
+     * @param array{
+     *      'pheanstalk': array<string, mixed>,
+     *      'cron': array<
+     *          int,
+     *          array{'name': string, 'expression': string, 'worker': string|callable}
+     *      >,
+     *      'queues': array<string, array{'worker': string|callable}>,
+     *      'config': array{'path': string}
+     * } $config
+     */
     public function __construct(
         protected array $config,
         protected Pheanstalk $pheanstalk,
@@ -32,6 +43,7 @@ class ProcessQueue extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /** @var string */
         $queueName = $input->getArgument('queueName');
         $verbose = $input->getOption('verbose');
 
@@ -50,6 +62,7 @@ class ProcessQueue extends Command
                 if (is_callable($worker)) {
                     $worker($payload);
                 } elseif (is_string($worker)) {
+                    /** @var callable */
                     $worker = $this->container->get($worker);
                     $worker($payload);
                 }

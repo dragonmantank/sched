@@ -15,6 +15,17 @@ class ProcessCron extends Command
 {
     protected static $defaultName = 'cron:process';
 
+    /**
+     * @param array{
+     *      'pheanstalk': array<string, mixed>,
+     *      'cron': array<
+     *          int,
+     *          array{'name': string, 'expression': string, 'worker': string|callable}
+     *      >,
+     *      'queues': array<string, array{'worker': string|callable}>,
+     *      'config': array{'path': string}
+     * } $config 
+     */
     public function __construct(
         protected array $config,
         protected ContainerInterface $container
@@ -36,6 +47,7 @@ class ProcessCron extends Command
                 if ($verbose) $output->writeln($cronJob['name'] . ' is due, running');
                 $worker = $cronJob['worker'];
                 if (is_string($worker)) {
+                    /** @var callable */
                     $worker = $this->container->get($worker);
                 }
                 $worker();

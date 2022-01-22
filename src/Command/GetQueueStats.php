@@ -31,6 +31,7 @@ class GetQueueStats extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /** @var string */
         $queueName = $input->getArgument('queueName');
 
         try {

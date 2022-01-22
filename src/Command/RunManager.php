@@ -7,6 +7,7 @@ namespace Dragonmantank\Sched\Command;
 use Pheanstalk\Exception\ServerException;
 use Pheanstalk\Pheanstalk;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
@@ -15,6 +16,17 @@ class RunManager extends Command
 {
     protected static $defaultName = 'manager:run';
 
+    /**
+     * @param array{
+     *      'pheanstalk': array<string, mixed>,
+     *      'cron': array<
+     *          int,
+     *          array{'name': string, 'expression': string, 'worker': string|callable}
+     *      >,
+     *      'queues': array<string, array{'worker': string|callable}>,
+     *      'config': array{'path': string}
+     * } $config
+     */
     public function __construct(
         protected array $config,
         protected Pheanstalk $pheanstalk
@@ -31,6 +43,7 @@ class RunManager extends Command
     {
         $verbose = $input->getOption('verbose');
         $jobs = [];
+        /** @phpstan-ignore-next-line */
         while (true) {
             foreach ($this->config['queues'] as $queueName => $data) {
                 if (!isset($jobs[$queueName])) {
@@ -58,6 +71,8 @@ class RunManager extends Command
                             '--',
                             $queueName
                         ];
+
+                        /** @phpstan-ignore-next-line */
                         $proc = new Process($command, realpath(__DIR__ . '/../../bin'));
                         $proc->start();
                         $jobs[$queueName][] = ['proc' => $proc];

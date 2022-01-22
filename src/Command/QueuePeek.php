@@ -31,6 +31,7 @@ class QueuePeek extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /** @var string */
         $queueName = $input->getArgument('queueName');
 
         try {
@@ -41,7 +42,9 @@ class QueuePeek extends Command
             return Command::FAILURE;
         }
         if ($job) {
-            $output->writeln(json_encode(json_decode($job->getData(), true), JSON_PRETTY_PRINT));
+            /** @var string */
+            $message = json_encode(json_decode($job->getData(), true), JSON_PRETTY_PRINT);
+            $output->writeln($message);
         }
         return Command::SUCCESS;
     }
