@@ -1,0 +1,25 @@
+<?php
+
+declare(strict_types=1);
+
+/*
+return [
+    'pheanstalk' => [
+        'host' => '127.0.0.1',
+        'port' => 113900,
+        'timeout' => 10,
+    ],
+    'cron' => [
+        [
+            'name' => 'Name of cron job, for logging',
+            'expression' => '* * * * *',
+            'worker' => // Invokable that needs to run at this time
+        ]
+    ]
+    'queues' => [
+        'queueName' => [
+            'worker' => // Invokable that processes the queue
+        ],
+    ],
+];
+*/

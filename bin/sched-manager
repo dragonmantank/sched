@@ -1,0 +1,83 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use DI\Container;
+use DI\ContainerBuilder;
+use Dragonmantank\Sched\Command\GetQueueStats;
+use Dragonmantank\Sched\Command\ProcessCron;
+use Dragonmantank\Sched\Command\ProcessQueue;
+use Dragonmantank\Sched\Command\QueuePeek;
+use Dragonmantank\Sched\Command\RunManager;
+use Dragonmantank\Sched\Component\Console\Application;
+use Pheanstalk\Pheanstalk;
+
+foreach ([__DIR__ . '/../../../autoload.php', __DIR__ . '/../vendor/autoload.php'] as $file) {
+    if (file_exists($file)) {
+        require $file;
+        break;
+    }
+}
+
+$builder = new ContainerBuilder();
+$builder->useAnnotations(true);
+$container = $builder->build();
+$container->set('config', function () {
+    // No, getopt() nor Symfony's ArgV parser work correctly for parsing out
+    // the config file at this stage, so we brute force it. This is a big issue
+    // for the calls that the Manager makes, versus direct invocation.
+    $found = false;
+    foreach ($_SERVER['argv'] as $index => $value) {
+        if ($value === '--config' || $value === '-c') {
+            $found = true;
+            break;
+        }
+    }
+
+    if ($found) {
+        $path = realpath($_SERVER['argv'][$index + 1]);
+        $config = require_once $path;
+        $config['config']['path'] = $path;
+        return $config;
+    } else {
+        $paths = [
+            getcwd() . '/.sched-manager.config.php',
+            getcwd() . '/sched-manager.config.php',
+            getcwd() . '/config/sched-manager.config.php',
+        ];
+        foreach ($paths as $possibleLocation) {
+            if (is_file($possibleLocation)) {
+                $config = require_once $possibleLocation;
+                $config['config']['path'] = $possibleLocation;
+                return $config;
+            }
+        }
+    }
+
+    throw new \RuntimeException('Unable to find a configuration file');
+});
+$container->set(Pheanstalk::class, function (Container $c) {
+    return Pheanstalk::create(
+        $c->get('config')['pheanstalk']['host'] ?? '127.0.0.1',
+        $c->get('config')['pheanstalk']['port'] ?? 11300,
+        $c->get('config')['pheanstalk']['timeout'] ?? 10,
+    );
+});
+$container->set(RunManager::class, function (Container $c) {
+    return new RunManager($c->get('config'), $c->get(Pheanstalk::class));
+});
+$container->set(ProcessQueue::class, function (Container $c) {
+    return new ProcessQueue($c->get('config'), $c->get(Pheanstalk::class), $c);
+});
+$container->set(ProcessCron::class, function (Container $c) {
+    return new ProcessCron($c->get('config'), $c);
+});
+
+$application = new Application();
+$application->add($container->get(RunManager::class));
+$application->add($container->get(ProcessQueue::class));
+$application->add($container->get(GetQueueStats::class));
+$application->add($container->get(QueuePeek::class));
+$application->add($container->get(ProcessCron::class));
+$application->run();
