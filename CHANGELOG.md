@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.3.0] - 2022-01-25
+
+### Added
+- Added the ability to see condensed stats acrossed all queues
+
+### Changed
+- N/A
+
+### Fixed
+- N/A
+
 ## [0.2.0] - 2022-01-24
 
 ### Added
