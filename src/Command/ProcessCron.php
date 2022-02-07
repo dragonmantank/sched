@@ -20,7 +20,7 @@ class ProcessCron extends Command
      *      'pheanstalk': array<string, mixed>,
      *      'cron': array<
      *          int,
-     *          array{'name': string, 'expression': string, 'worker': string|callable}
+     *          array{'name': string, 'expression': string, 'worker': string|callable, 'options': null|array<string, mixed>}
      *      >,
      *      'queues': array<string, array{'worker': string|callable}>,
      *      'config': array{'path': string}
@@ -50,7 +50,8 @@ class ProcessCron extends Command
                     /** @var callable */
                     $worker = $this->container->get($worker);
                 }
-                $worker();
+                $cronJob['options'] = $cronJob['options'] ?? [];
+                $worker(...$cronJob['options']);
             }
         }
 

@@ -1,5 +1,15 @@
 # Change Log
 
+## [0.4.0] - 2022-02-06
+
+### Added
+- Cron jobs can now be passed `options` to their `__invoke()` method, which are spread (`...`) as named arguments
+
+### Changed
+- N/A
+
+### Fixed
+- N/A
 ## [0.3.0] - 2022-01-25
 
 ### Added
