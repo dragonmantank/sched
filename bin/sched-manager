@@ -78,6 +78,9 @@ $container->set(ProcessQueue::class, function (Container $c) {
 $container->set(ProcessCron::class, function (Container $c) {
     return new ProcessCron($c->get('config'), $c);
 });
+$container->set(ForceProcessCron::class, function (Container $c) {
+    return new ForceProcessCron($c->get('config'), $c);
+});
 
 $application = new Application();
 $application->add($container->get(RunManager::class));

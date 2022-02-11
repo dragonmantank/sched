@@ -1,5 +1,15 @@
 # Change Log
 
+## [0.5.1] - 2022-02-11
+
+### Added
+- N/A
+### Changed
+- Cron Force now outputs if it cannot find the specified name
+
+### Fixed
+- Cron Force job has proper DI set
+
 ## [0.5.0] - 2022-02-11
 
 ### Added

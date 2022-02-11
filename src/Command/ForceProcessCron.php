@@ -57,9 +57,12 @@ class ForceProcessCron extends Command
                 $cronJob['options'] = $cronJob['options'] ?? [];
                 $worker(...$cronJob['options']);
                 break;
+
+                return Command::SUCCESS;
             }
         }
 
-        return Command::SUCCESS;
+        if ($verbose) $output->writeln('Unable to find job');
+        return Command::FAILURE;
     }
 }
