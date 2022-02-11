@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.5.0] - 2022-02-11
+
+### Added
+- Cron jobs can now be forced with `cron:force-process <name>`
+
+### Changed
+- N/A
+
+### Fixed
+- N/A
+
 ## [0.4.0] - 2022-02-06
 
 ### Added
