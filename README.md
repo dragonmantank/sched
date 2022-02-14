@@ -45,6 +45,10 @@ return [
         ]
     ],
     'custom_commands' => [MyCommand::class, MyOtherCommand::class],
+    'manager' => [
+        'max_workers' => 10,
+        'max_workers_per_tube' => 5,
+    ],
     'pheanstalk' => [
         'host' => '127.0.0.1',
         'port' => 113900,
@@ -100,6 +104,8 @@ class Payroll
     }
 }
 ```
+
+You can also control the number of jobs that spawn per manager instance as well as per queue. By default Sched limits itself to 10 total jobs and 5 total jobs per queue, but this can be tweaked under the `max_workers` and `max_workers_per_queue` options under the `manager` config section.
 
 ### Scheduling Jobs
 

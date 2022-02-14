@@ -43,8 +43,19 @@ class RunManager extends Command
     {
         $verbose = $input->getOption('verbose');
         $jobs = [];
+
         /** @phpstan-ignore-next-line */
         while (true) {
+            $total = 0;
+            foreach ($jobs as $queueName => $procs) {
+                $total += count($jobs[$queueName]);
+            }
+
+            if ($total >= $this->config['manager']['max_workers']) {
+                if ($verbose) $output->writeln("Reached the total maximum of workers");
+                goto checkProcesses;
+            }
+
             foreach ($this->config['queues'] as $queueName => $data) {
                 if (!isset($jobs[$queueName])) {
                     $jobs[$queueName] = [];
@@ -57,9 +68,21 @@ class RunManager extends Command
                     continue;
                 }
                 if ($verbose) $output->writeln("Checking to see if we need any workers");
+
                 $neededWorkers = ceil((int) $stats['current-jobs-ready'] / 5);
                 if (count($jobs[$queueName]) < $neededWorkers) {
                     if ($verbose) $output->writeln("Need " . $neededWorkers);
+
+                    if (count($jobs[$queueName]) >= $this->config['manager']['max_workers_per_tube']) {
+                        if ($verbose) $output->writeln($queueName . " has reached max workers ");
+                        break;
+                    }
+
+                    if ($neededWorkers > $this->config['manager']['max_workers_per_tube']) {
+                        if ($verbose) $output->writeln('Capping needed workers at ' . $this->config['manager']['max_workers_per_tube']);
+                        $neededWorkers = $this->config['manager']['max_workers_per_tube'];
+                    }
+
                     for ($i = 0; $i <= $neededWorkers - count($jobs[$queueName]); $i++) {
                         if ($verbose) $output->writeln("Opening job");
                         $command = [
@@ -78,14 +101,17 @@ class RunManager extends Command
                         $jobs[$queueName][] = ['proc' => $proc];
                     }
                 }
+            }
 
+            checkProcesses:
+            foreach ($this->config['queues'] as $queueName => $data) {
                 if ($verbose) $output->writeln("Checking job statuses");
                 foreach ($jobs[$queueName] as $id => $procInfo) {
                     if (!$procInfo['proc']->isRunning()) {
                         $output->writeln($procInfo['proc']->getOutput());
                         $output->writeln($procInfo['proc']->getErrorOutput());
                         unset($jobs[$queueName][$id]);
-                        if ($verbose) $output->writeln("Closed Job");
+                        if ($verbose) $output->writeln("Closed job " . $id . ' from ' . $queueName);
                     }
                 }
             }

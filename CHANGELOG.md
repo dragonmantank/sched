@@ -1,5 +1,17 @@
 # Change Log
 
+## [0.7.0] - 2022-02-14
+
+### Added
+- Configuration section for Manager
+
+### Changed
+- Manager now limits itself to a configurable number of workers to avoid resource exhaustion
+- A default config is now generated that contains a `manager` and `pheanstalk` section
+
+### Fixed
+- N/A
+
 ## [0.6.0] - 2022-02-14
 
 ### Added

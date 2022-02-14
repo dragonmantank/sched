@@ -13,6 +13,10 @@ return [
         ]
     ],
     'custom_commands' => [],
+    'manager' => [
+        'max_workers' => 10,
+        'max_workers_per_tube' => 5,
+    ],
     'pheanstalk' => [
         'host' => '127.0.0.1',
         'port' => 113900,
