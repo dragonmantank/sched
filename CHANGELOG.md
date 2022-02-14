@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.6.0] - 2022-02-14
+
+### Added
+- Custom Commands can now be registered with `custom_commands` array in config file
+
+### Changed
+- N/A
+
+### Fixed
+- N/A
+
 ## [0.5.1] - 2022-02-11
 
 ### Added

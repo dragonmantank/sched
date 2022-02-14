@@ -90,4 +90,13 @@ $application->add($container->get(GetQueueStats::class));
 $application->add($container->get(QueuePeek::class));
 $application->add($container->get(QueueClear::class));
 $application->add($container->get(ProcessCron::class));
+
+$config = $container->get('config');
+if (isset($config['custom_commands'])) {
+    foreach ($config['custom_commands'] as $className) {
+        $application->add($container->get($className));
+    }
+}
+
+
 $application->run();

@@ -3,8 +3,6 @@
 
 Sched is a simple job runner and scheduler to schedule and run jobs. Using beanstalkd as a backend, it can arbitrarily invoke code based on jobs that come into tubes as well as schedule jobs using a cron syntax.
 
-Sched is a great drop-in replacement
-
 ## Installation
 
 Sched is designed to be installed with your application and use your vendor and autoload settings. It is not meant to be run on it's own as a standalone application, though it does have it's own daemon.
@@ -35,7 +33,7 @@ The manager will loop through all of the configured queues and process them in l
 
 ## Configuration
 
-Sched requires a configuration file to know how to process your queues, and will ignore any queues that are not configured. You can also schedule jobs through this same configuration file.
+Sched requires a configuration file to know how to process your queues, and will ignore any queues that are not configured. You can also schedule jobs and custom commands through this same configuration file.
 
 ```php
 return [
@@ -45,7 +43,13 @@ return [
             'expression' => '* * * * *',
             'worker' => // Invokable that needs to run at this time
         ]
-    ]
+    ],
+    'custom_commands' => [MyCommand::class, MyOtherCommand::class],
+    'pheanstalk' => [
+        'host' => '127.0.0.1',
+        'port' => 113900,
+        'timeout' => 10,
+    ],
     'queues' => [
         'queueName' => [
             'worker' => // Invokable that processes the queue
@@ -139,4 +143,49 @@ class GeneratePayrollDownload
 }
 ```
 
-While the above example adds a job for the queue system to pick up and process, you can also run workers that process whatever is needed at the time without using the queues. 
+While the above example adds a job for the queue system to pick up and process, you can also run workers that process whatever is needed at the time without using the queues.
+
+### Custom Commands
+
+There may come a time where you need to register a command directly with Sched instead of having it schedule jobs for you. For example, if you want to run a script every so often to queue up a bunch of files for processing but do not want it to be on a schedule, you can register a command with `sched-manager` that you can invoke. You can set a class name in the `custom_commands` array of the configuration file. This command must be a [Symfony Console Command](https://symfony.com/doc/current/console.html).
+
+```php
+// sched-manager-config.php.dist
+use Me\MyApp\Command\QueueFilesForProcessing;
+
+return [
+    'cron' => [ ...],
+    'custom_commands' => [
+        QueueFilesForProcessing::class,
+    ]
+    'queues' => [ ... ]
+];
+```
+
+```php
+// QueueFieldsForProcessing.php
+use Me\MyApp\Command;
+
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+
+class QueueFilesForProcessing extends Command
+{
+    protected static $defaultName = 'app:customcommand';
+
+    protected function configure(): void
+    {
+        $this
+            ->setHelp('This is a sample command');
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        // Do some stuff
+        Return Command::SUCCESS;
+    }
+
+}
+```

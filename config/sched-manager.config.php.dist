@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 /*
 return [
-    'pheanstalk' => [
-        'host' => '127.0.0.1',
-        'port' => 113900,
-        'timeout' => 10,
-    ],
     'cron' => [
         [
             'name' => 'Name of cron job, for logging',
@@ -16,7 +11,13 @@ return [
             'worker' => // Invokable that needs to run at this time,
             'options' => [], // array<string, mixed> that is spread out to worker parameters
         ]
-    ]
+    ],
+    'custom_commands' => [],
+    'pheanstalk' => [
+        'host' => '127.0.0.1',
+        'port' => 113900,
+        'timeout' => 10,
+    ],
     'queues' => [
         'queueName' => [
             'worker' => // Invokable that processes the queue
