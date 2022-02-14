@@ -108,8 +108,6 @@ class RunManager extends Command
                 if ($verbose) $output->writeln("Checking job statuses");
                 foreach ($jobs[$queueName] as $id => $procInfo) {
                     if (!$procInfo['proc']->isRunning()) {
-                        $output->writeln($procInfo['proc']->getOutput());
-                        $output->writeln($procInfo['proc']->getErrorOutput());
                         unset($jobs[$queueName][$id]);
                         if ($verbose) $output->writeln("Closed job " . $id . ' from ' . $queueName);
                     }
