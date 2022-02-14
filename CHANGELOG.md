@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.7.1] - 2022-02-14
+
+### Added
+- N/A
+
+### Changed
+- N/A
+
+### Fixed
+- Fixed manager config keys in default config
+
 ## [0.7.0] - 2022-02-14
 
 ### Added

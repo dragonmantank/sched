@@ -28,8 +28,8 @@ $container = $builder->build();
 $container->set('config', function () {
     $defaultConfig = [
         'manager' => [
-            'max-workers' => 10,
-            'max-workers-per-tube' => 5,
+            'max_workers' => 10,
+            'max_workers_per_tube' => 5,
         ],
         'pheanstalk' => [
             'host' => '127.0.0.1',
