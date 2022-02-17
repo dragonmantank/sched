@@ -16,6 +16,8 @@ class ProcessCron extends Command
     protected static $defaultName = 'cron:process';
 
     /**
+     * @Inject({"config": "config"})
+     *
      * @param array{
      *      'pheanstalk': array<string, mixed>,
      *      'cron': array<

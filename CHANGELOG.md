@@ -6,7 +6,7 @@
 - Added `cron:info` command to view what crons are registered
 
 ### Changed
-- N/A
+- Changed autoloading for most of the commands
 
 ### Fixed
 - N/A

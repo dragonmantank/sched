@@ -79,21 +79,6 @@ $container->set(Pheanstalk::class, function (Container $c) {
         $c->get('config')['pheanstalk']['timeout'] ?? 10,
     );
 });
-$container->set(RunManager::class, function (Container $c) {
-    return new RunManager($c->get('config'), $c->get(Pheanstalk::class));
-});
-$container->set(GetQueueStats::class, function (Container $c) {
-    return new GetQueueStats($c->get('config'), $c->get(Pheanstalk::class), $c);
-});
-$container->set(ProcessQueue::class, function (Container $c) {
-    return new ProcessQueue($c->get('config'), $c->get(Pheanstalk::class), $c);
-});
-$container->set(ProcessCron::class, function (Container $c) {
-    return new ProcessCron($c->get('config'), $c);
-});
-$container->set(ForceProcessCron::class, function (Container $c) {
-    return new ForceProcessCron($c->get('config'), $c);
-});
 
 $application = new Application();
 $application->add($container->get(RunManager::class));

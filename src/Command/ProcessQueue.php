@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dragonmantank\Sched\Command;
 
+use DI\Annotation\Inject;
 use Pheanstalk\Pheanstalk;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -16,6 +17,8 @@ class ProcessQueue extends Command
     protected static $defaultName = 'queue:process';
 
     /**
+     * @Inject({"config": "config"})
+     *
      * @param array{
      *      'pheanstalk': array<string, mixed>,
      *      'cron': array<

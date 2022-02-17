@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dragonmantank\Sched\Command;
 
+use DI\Annotation\Inject;
 use Pheanstalk\Exception\ServerException;
 use Pheanstalk\Pheanstalk;
 use Symfony\Component\Console\Command\Command;
@@ -18,6 +19,8 @@ class GetQueueStats extends Command
     protected static $defaultName = 'queue:stats';
 
     /**
+     * @Inject({"config": "config"})
+     *
      * @param array{
      *      'pheanstalk': array<string, mixed>,
      *      'cron': array<

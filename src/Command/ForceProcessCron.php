@@ -17,6 +17,8 @@ class ForceProcessCron extends Command
     protected static $defaultName = 'cron:force-process';
 
     /**
+     * @Inject({"config": "config"})
+     *
      * @param array{
      *      'pheanstalk': array<string, mixed>,
      *      'cron': array<

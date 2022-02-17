@@ -17,6 +17,8 @@ class RunManager extends Command
     protected static $defaultName = 'manager:run';
 
     /**
+     * @Inject({"config": "config"})
+     *
      * @param array{
      *      'pheanstalk': array<string, mixed>,
      *      'cron': array<
