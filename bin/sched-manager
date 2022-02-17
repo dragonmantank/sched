@@ -6,6 +6,7 @@ declare(strict_types=1);
 use DI\Container;
 use DI\ContainerBuilder;
 use Dragonmantank\Sched\Command\ForceProcessCron;
+use Dragonmantank\Sched\Command\GetCronInfo;
 use Dragonmantank\Sched\Command\GetQueueStats;
 use Dragonmantank\Sched\Command\ProcessCron;
 use Dragonmantank\Sched\Command\ProcessQueue;
@@ -102,6 +103,7 @@ $application->add($container->get(GetQueueStats::class));
 $application->add($container->get(QueuePeek::class));
 $application->add($container->get(QueueClear::class));
 $application->add($container->get(ProcessCron::class));
+$application->add($container->get(GetCronInfo::class));
 
 $config = $container->get('config');
 if (isset($config['custom_commands'])) {

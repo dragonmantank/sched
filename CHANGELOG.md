@@ -1,5 +1,17 @@
 # Change Log
 
+## [0.8.0] - 2022-02-17
+
+### Added
+- Added `cron:info` command to view what crons are registered
+
+### Changed
+- N/A
+
+### Fixed
+- N/A
+
+
 ## [0.7.1] - 2022-02-14
 
 ### Added
