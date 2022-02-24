@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.9.0] - 2022-02-23
+### Added
+- Added support for PSR-3 loggers
+
+### Changed
+- Some commands are now logger aware (`cron:force`, `cron:process`, `queue:process`, `manager:run`)
+- Output of some console lines have changed to better match the logger
+
+### Fixed
+- N/A
+
 ## [0.8.0] - 2022-02-17
 
 ### Added

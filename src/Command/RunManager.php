@@ -4,16 +4,20 @@ declare(strict_types=1);
 
 namespace Dragonmantank\Sched\Command;
 
+use Dragonmantank\Sched\LoggingTrait;
 use Pheanstalk\Exception\ServerException;
 use Pheanstalk\Pheanstalk;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
 class RunManager extends Command
 {
+    use LoggingTrait;
+
     protected static $defaultName = 'manager:run';
 
     /**
@@ -31,7 +35,8 @@ class RunManager extends Command
      */
     public function __construct(
         protected array $config,
-        protected Pheanstalk $pheanstalk
+        protected Pheanstalk $pheanstalk,
+        protected ?LoggerInterface $logger
     ) {
         parent::__construct();
     }
@@ -43,7 +48,6 @@ class RunManager extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $verbose = $input->getOption('verbose');
         $jobs = [];
 
         /** @phpstan-ignore-next-line */
@@ -54,7 +58,7 @@ class RunManager extends Command
             }
 
             if ($total >= $this->config['manager']['max_workers']) {
-                if ($verbose) $output->writeln("Reached the total maximum of workers");
+                $this->log($output, LogLevel::NOTICE, "[Manager] Reached the total maximum of workers");
                 goto checkProcesses;
             }
 
@@ -66,27 +70,27 @@ class RunManager extends Command
                 try {
                     $stats = $this->pheanstalk->statsTube($queueName);
                 } catch (ServerException $e) {
-                    if ($verbose) $output->writeln("Tube is empty or does not existing, skipping");
+                    $this->log($output, LogLevel::NOTICE, "[Manager] [" . $queueName . "] Empty or does not exist, skipping");
                     continue;
                 }
-                if ($verbose) $output->writeln("Checking to see if we need any workers");
+                $this->log($output, LogLevel::DEBUG, "[Manager] [" . $queueName . "] Checking to see if we need any workers");
 
                 $neededWorkers = ceil((int) $stats['current-jobs-ready'] / 5);
                 if (count($jobs[$queueName]) < $neededWorkers) {
-                    if ($verbose) $output->writeln("Need " . $neededWorkers);
+                    $this->log($output, LogLevel::NOTICE, "[Manager] [" . $queueName . "] Need " . $neededWorkers . " workers");
 
                     if (count($jobs[$queueName]) >= $this->config['manager']['max_workers_per_tube']) {
-                        if ($verbose) $output->writeln($queueName . " has reached max workers ");
+                        $this->log($output, LogLevel::NOTICE, "[Manager] [" . $queueName . "] Manager reached max workers");
                         break;
                     }
 
                     if ($neededWorkers > $this->config['manager']['max_workers_per_tube']) {
-                        if ($verbose) $output->writeln('Capping needed workers at ' . $this->config['manager']['max_workers_per_tube']);
+                        $this->log($output, LogLevel::DEBUG, "[Manager] [" . $queueName . "] Capping needed workers at " . $this->config['manager']['max_workers_per_tube']);
                         $neededWorkers = $this->config['manager']['max_workers_per_tube'];
                     }
 
                     for ($i = 0; $i <= $neededWorkers - count($jobs[$queueName]); $i++) {
-                        if ($verbose) $output->writeln("Opening job");
+                        $this->log($output, LogLevel::NOTICE, "[Manager] [" . $queueName . "] Spawning worker");
                         $command = [
                             'php',
                             'sched-manager',
@@ -107,16 +111,16 @@ class RunManager extends Command
 
             checkProcesses:
             foreach ($this->config['queues'] as $queueName => $data) {
-                if ($verbose) $output->writeln("Checking job statuses");
+                $this->log($output, LogLevel::DEBUG, "[Manager] [" . $queueName . "] Checking processes");
                 foreach ($jobs[$queueName] as $id => $procInfo) {
                     if (!$procInfo['proc']->isRunning()) {
                         unset($jobs[$queueName][$id]);
-                        if ($verbose) $output->writeln("Closed job " . $id . ' from ' . $queueName);
+                        $this->log($output, LogLevel::DEBUG, "[Manager] [" . $queueName . "] Closed job " . $id . ' from ' . $queueName);
                     }
                 }
             }
 
-            if ($verbose) $output->writeln("Sleeping for a bit");
+            $this->log($output, LogLevel::DEBUG, "[Manager] Sleeping for 5 seconds");
             sleep(5);
         }
     }

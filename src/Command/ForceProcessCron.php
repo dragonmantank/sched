@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Dragonmantank\Sched\Command;
 
 use Cron\CronExpression;
+use Dragonmantank\Sched\LoggingTrait;
 use Pheanstalk\Pheanstalk;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,6 +17,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ForceProcessCron extends Command
 {
+    use LoggingTrait;
+
     protected static $defaultName = 'cron:force-process';
 
     /**
@@ -31,7 +36,8 @@ class ForceProcessCron extends Command
      */
     public function __construct(
         protected array $config,
-        protected ContainerInterface $container
+        protected ContainerInterface $container,
+        protected ?LoggerInterface $logger,
     ) {
         parent::__construct();
     }
@@ -45,12 +51,11 @@ class ForceProcessCron extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $verbose = $input->getOption('verbose');
         $name = $input->getArgument('name');
 
         foreach ($this->config['cron'] as $cronJob) {
             if ($cronJob['name'] === $name) {
-                if ($verbose) $output->writeln($cronJob['name'] . ' found, force running');
+                $this->log($output, LogLevel::DEBUG, $cronJob['name'] . ' found, force running');
                 $worker = $cronJob['worker'];
                 if (is_string($worker)) {
                     /** @var callable */
@@ -64,7 +69,7 @@ class ForceProcessCron extends Command
             }
         }
 
-        if ($verbose) $output->writeln('Unable to find job');
+        $this->log($output, LogLevel::ERROR, $cronJob['name'] . ' found, force running');
         return Command::FAILURE;
     }
 }

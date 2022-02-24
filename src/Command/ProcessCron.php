@@ -5,14 +5,19 @@ declare(strict_types=1);
 namespace Dragonmantank\Sched\Command;
 
 use Cron\CronExpression;
+use Dragonmantank\Sched\LoggingTrait;
 use Pheanstalk\Pheanstalk;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ProcessCron extends Command
 {
+    use LoggingTrait;
+
     protected static $defaultName = 'cron:process';
 
     /**
@@ -30,7 +35,8 @@ class ProcessCron extends Command
      */
     public function __construct(
         protected array $config,
-        protected ContainerInterface $container
+        protected ContainerInterface $container,
+        protected ?LoggerInterface $logger
     ) {
         parent::__construct();
     }
@@ -46,7 +52,7 @@ class ProcessCron extends Command
         $verbose = $input->getOption('verbose');
         foreach ($this->config['cron'] as $cronJob) {
             if ((new CronExpression($cronJob['expression']))->isDue()) {
-                if ($verbose) $output->writeln($cronJob['name'] . ' is due, running');
+                $this->log($output, LogLevel::DEBUG, $cronJob['name'] . ' is due, running');
                 $worker = $cronJob['worker'];
                 if (is_string($worker)) {
                     /** @var callable */

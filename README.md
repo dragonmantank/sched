@@ -44,6 +44,7 @@ return [
             'worker' => // Invokable that needs to run at this time
         ]
     ],
+    'logger' => MyLoggingFactory::class,
     'custom_commands' => [MyCommand::class, MyOtherCommand::class],
     'manager' => [
         'max_workers' => 10,
@@ -195,3 +196,8 @@ class QueueFilesForProcessing extends Command
 
 }
 ```
+
+### Logging
+Sched supports PSR-3 compatible loggers in addition to writing to the console itself. If you supply an invokable class to the `logger` configuration key, Sched will inject that into the available commands where requested via dependency injection. Many of the commands will still write output to the console even if a proper logger is not used. 
+
+Sched makes available `Dragonmantank\Sched\LoggingTrait` as a trait to help write to the logger in your own commands. You can add this to your classes and then use `$this->log($output, LogLevel::INFO, "My Message");` to log to the logger itself. This function will also log to the console depending on level of verbosity (`-v`, `-vv`, `-vvv`) supplied to the command.

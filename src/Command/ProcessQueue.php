@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Dragonmantank\Sched\Command;
 
 use DI\Annotation\Inject;
+use Dragonmantank\Sched\LoggingTrait;
 use Pheanstalk\Pheanstalk;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,6 +17,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ProcessQueue extends Command
 {
+    use LoggingTrait;
+
     protected static $defaultName = 'queue:process';
 
     /**
@@ -32,7 +37,8 @@ class ProcessQueue extends Command
     public function __construct(
         protected array $config,
         protected Pheanstalk $pheanstalk,
-        protected ContainerInterface $container
+        protected ContainerInterface $container,
+        protected ?LoggerInterface $logger,
     ) {
         parent::__construct();
     }
@@ -48,10 +54,10 @@ class ProcessQueue extends Command
     {
         /** @var string */
         $queueName = $input->getArgument('queueName');
-        $verbose = $input->getOption('verbose');
 
         $this->pheanstalk->watch($queueName);
         for ($i = 0; $i <= 5; $i++) {
+            $this->log($output, LogLevel::DEBUG, 'Waiting for Job ' . $i . ' in ' . $queueName);
             $stats = $this->pheanstalk->statsTube($queueName);
             if ($stats['current-jobs-ready'] < 1) {
                 exit(0);
@@ -59,6 +65,7 @@ class ProcessQueue extends Command
 
             $job = $this->pheanstalk->reserve();
             try {
+                $this->log($output, LogLevel::DEBUG, 'Received job ' . $job->getId() . ' in ' . $queueName);
                 $payload = json_decode($job->getData(), true);
                 $worker = $this->config['queues'][$queueName]['worker'];
 
@@ -70,8 +77,11 @@ class ProcessQueue extends Command
                     $worker($payload);
                 }
 
+                $this->log($output, LogLevel::DEBUG, 'Finished, deleting job ' . $job->getId() . ' from ' . $queueName);
                 $this->pheanstalk->delete($job);
             } catch (\Exception $e) {
+                $this->log($output, LogLevel::DEBUG, 'Received error, releasing job ' . $job->getId() . ' from ' . $queueName);
+                $this->log($output, LogLevel::ERROR, $e->getMessage());
                 $this->pheanstalk->release($job);
             }
         }
