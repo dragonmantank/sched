@@ -10,6 +10,7 @@ use Dragonmantank\Sched\Command\GetCronInfo;
 use Dragonmantank\Sched\Command\GetQueueStats;
 use Dragonmantank\Sched\Command\ProcessCron;
 use Dragonmantank\Sched\Command\ProcessQueue;
+use Dragonmantank\Sched\Command\QueueAddJob;
 use Dragonmantank\Sched\Command\QueueClear;
 use Dragonmantank\Sched\Command\QueuePeek;
 use Dragonmantank\Sched\Command\RunManager;
@@ -107,6 +108,7 @@ $application->add($container->get(QueuePeek::class));
 $application->add($container->get(QueueClear::class));
 $application->add($container->get(ProcessCron::class));
 $application->add($container->get(GetCronInfo::class));
+$application->add($container->get(QueueAddJob::class));
 
 $config = $container->get('config');
 if (isset($config['custom_commands'])) {

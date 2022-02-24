@@ -13,6 +13,7 @@ use Psr\Log\LogLevel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ProcessQueue extends Command
@@ -47,6 +48,7 @@ class ProcessQueue extends Command
     {
         $this
             ->setHelp('Reads a queue and attempts to process it')
+            ->addOption('number', 'n', InputOption::VALUE_REQUIRED, 'Number of jobs to process', 5)
             ->addArgument('queueName', InputArgument::REQUIRED, 'Queue to process');
     }
 
@@ -54,9 +56,10 @@ class ProcessQueue extends Command
     {
         /** @var string */
         $queueName = $input->getArgument('queueName');
+        $numberOfJobs = (int) $input->getOption('number');
 
         $this->pheanstalk->watch($queueName);
-        for ($i = 0; $i <= 5; $i++) {
+        for ($i = 0; $i <= $numberOfJobs; $i++) {
             $this->log($output, LogLevel::DEBUG, 'Waiting for Job ' . $i . ' in ' . $queueName);
             $stats = $this->pheanstalk->statsTube($queueName);
             if ($stats['current-jobs-ready'] < 1) {

@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.10.0] - 2022-02-24
+### Added
+- Added `queue:add-job` command to add a job to a queue
+- Added `-n` option to `queue:process` to allow a specified number of jobs to be processed
+
+### Changed
+- N/A
+
+### Fixed
+- N/A
+
 ## [0.9.1] - 2022-02-24
 ### Added
 - N/A
