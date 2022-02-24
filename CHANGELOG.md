@@ -1,5 +1,15 @@
 # Change Log
 
+## [0.10.1] - 2022-02-24
+### Added
+- `queue:process` `-n` changed to `-x` to avoid collision with "no interaction" flag
+
+### Changed
+- N/A
+
+### Fixed
+- N/A
+
 ## [0.10.0] - 2022-02-24
 ### Added
 - Added `queue:add-job` command to add a job to a queue

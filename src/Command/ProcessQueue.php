@@ -48,7 +48,7 @@ class ProcessQueue extends Command
     {
         $this
             ->setHelp('Reads a queue and attempts to process it')
-            ->addOption('number', 'n', InputOption::VALUE_REQUIRED, 'Number of jobs to process', 5)
+            ->addOption('number', 'x', InputOption::VALUE_REQUIRED, 'Number of jobs to process', 5)
             ->addArgument('queueName', InputArgument::REQUIRED, 'Queue to process');
     }
 
