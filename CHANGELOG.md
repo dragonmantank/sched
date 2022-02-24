@@ -1,5 +1,15 @@
 # Change Log
 
+## [0.9.1] - 2022-02-24
+### Added
+- N/A
+
+### Changed
+- Support both PSR Log 2.0 and 3.0
+
+### Fixed
+- N/A
+
 ## [0.9.0] - 2022-02-23
 ### Added
 - Added support for PSR-3 loggers
