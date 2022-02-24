@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dragonmantank\Sched;
 
 use Psr\Log\LogLevel;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 trait LoggingTrait
@@ -16,7 +17,14 @@ trait LoggingTrait
         }
 
         $timestamp = new \DateTimeImmutable();
-        $message = '[' . $timestamp->format(\DateTimeInterface::ATOM) . '] ' . $message;
+        $message = '[' . $timestamp->format(\DateTimeInterface::ATOM) . '] [' . $level . '] ' . $message;
+
+        // Log messages should always go to stderr, not stdout
+        // https://pubs.opengroup.org/onlinepubs/9699919799/functions/stdin.html
+        if ($output instanceof ConsoleOutputInterface) {
+            $output = $output->getErrorOutput();
+        }
+
         if (($level === LogLevel::DEBUG) && $output->isDebug()) {
             $output->writeln($message);
             return;
@@ -30,6 +38,16 @@ trait LoggingTrait
         if (($level === LogLevel::NOTICE) && $output->isVerbose()) {
             $output->writeln($message);
             return;
+        }
+
+        $errorLevels = [
+            LogLevel::ALERT,
+            LogLevel::CRITICAL,
+            LogLevel::EMERGENCY,
+            LogLevel::ERROR,
+        ];
+        if (in_array($level, $errorLevels)) {
+            $output->writeln($message);
         }
     }
 }

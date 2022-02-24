@@ -1,5 +1,15 @@
 # Change Log
 
+## [0.10.2] - 2022-02-24
+### Added
+- N/A
+
+### Changed
+- Jobs that fail more than 3 times are now buried to avoid endless loops
+
+### Fixed
+- Logging now goes to `stderr` instead of `stdout` for diagnostic info
+
 ## [0.10.1] - 2022-02-24
 ### Added
 - `queue:process` `-n` changed to `-x` to avoid collision with "no interaction" flag

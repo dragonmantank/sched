@@ -85,6 +85,14 @@ class ProcessQueue extends Command
             } catch (\Exception $e) {
                 $this->log($output, LogLevel::DEBUG, 'Received error, releasing job ' . $job->getId() . ' from ' . $queueName);
                 $this->log($output, LogLevel::ERROR, $e->getMessage());
+                $stats = $this->pheanstalk->statsJob($job);
+                $this->log($output, LogLevel::DEBUG, 'Job ' . $job->getId() . ' reserved ' . $stats['reserves'] . ' times');
+
+                if ($stats['reserves'] > 3) {
+                    $this->log($output, LogLevel::DEBUG, 'Job ' . $job->getId() . ' buried');
+                    $this->pheanstalk->bury($job);
+                }
+
                 $this->pheanstalk->release($job);
             }
         }
