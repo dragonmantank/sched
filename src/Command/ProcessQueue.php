@@ -72,16 +72,24 @@ class ProcessQueue extends Command
                 $payload = json_decode($job->getData(), true);
                 $worker = $this->config['queues'][$queueName]['worker'];
 
-                if (is_callable($worker)) {
-                    $worker($payload);
-                } elseif (is_string($worker)) {
+                if (is_string($worker)) {
                     /** @var callable */
                     $worker = $this->container->get($worker);
-                    $worker($payload);
                 }
 
-                $this->log($output, LogLevel::DEBUG, 'Finished, deleting job ' . $job->getId() . ' from ' . $queueName);
-                $this->pheanstalk->delete($job);
+                if (!is_callable($worker)) {
+                    throw new \InvalidArgumentException('Worker is not callable');
+                }
+
+                $exitCode = $worker($payload);
+
+                if ($exitCode === 0) {
+                    $this->log($output, LogLevel::DEBUG, 'Finished, deleting job ' . $job->getId() . ' from ' . $queueName);
+                    $this->pheanstalk->delete($job);
+                } else {
+                    $this->log($output, LogLevel::ERROR, 'Worker returned ' . $exitCode . ', rescheduling job for 60 seconds');
+                    $this->pheanstalk->release(job: $job, delay: 60);
+                }
             } catch (\Exception $e) {
                 $this->log($output, LogLevel::DEBUG, 'Received error, releasing job ' . $job->getId() . ' from ' . $queueName);
                 $this->log($output, LogLevel::ERROR, $e->getMessage());
@@ -93,7 +101,7 @@ class ProcessQueue extends Command
                     $this->pheanstalk->bury($job);
                 }
 
-                $this->pheanstalk->release($job);
+                $this->pheanstalk->release(job: $job, delay: 60);
             }
         }
 

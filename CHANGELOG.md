@@ -1,5 +1,15 @@
 # Change Log
 
+## [0.10.3] - 2022-02-25
+### Added
+- N/A
+
+### Changed
+- Workers that throw exceptions or return a non-0 exit code now release jobs with a 60 second delay. Previously jobs that returned a non-0 exit code just deleted the job.
+
+### Fixed
+- N/A
+
 ## [0.10.2] - 2022-02-24
 ### Added
 - N/A
