@@ -1,5 +1,15 @@
 # Change Log
 
+## [0.11.0] - 2022-03-08
+### Added
+- Added `SimplePayloadCron` to make it easier to set up crons that push a static payload into a queue
+
+### Changed
+- N/A
+
+### Fixed
+- N/A
+
 ## [0.10.3] - 2022-02-25
 ### Added
 - N/A
