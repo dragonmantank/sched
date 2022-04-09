@@ -12,6 +12,9 @@ return [
             'options' => [], // array<string, mixed> that is spread out to worker parameters
         ]
     ],
+    'messages' => [
+        'jitter' => ['min' => 0, 'max' => 0],
+    ],
     'custom_commands' => [],
     'logger' => null,
     'manager' => [

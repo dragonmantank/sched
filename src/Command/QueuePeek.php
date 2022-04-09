@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Dragonmantank\Sched\Command;
 
+use Dragonmantank\Sched\Exception\NoMessageInQueueException;
+use Dragonmantank\Sched\Queue\QueueService;
 use Pheanstalk\Exception\ServerException;
-use Pheanstalk\Pheanstalk;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,7 +17,7 @@ class QueuePeek extends Command
     protected static $defaultName = 'queue:peek';
 
     public function __construct(
-        protected Pheanstalk $pheanstalk
+        protected QueueService $queueService
     ) {
         parent::__construct();
     }
@@ -35,16 +35,18 @@ class QueuePeek extends Command
         $queueName = $input->getArgument('queueName');
 
         try {
-            $this->pheanstalk->useTube($queueName);
-            $job = $this->pheanstalk->peekReady();
+            $message = $this->queueService->peekReady($queueName);
+        } catch (NoMessageInQueueException) {
+            $output->writeln('No messages to peek');
         } catch (ServerException $e) {
             $output->writeln('Unable to get stats, tube does not exist');
             return Command::FAILURE;
         }
-        if ($job) {
+
+        if ($message) {
             /** @var string */
-            $message = json_encode(json_decode($job->getData(), true), JSON_PRETTY_PRINT);
-            $output->writeln($message);
+            $payload = json_encode(json_decode($message->payload, true), JSON_PRETTY_PRINT);
+            $output->writeln($payload);
         }
         return Command::SUCCESS;
     }

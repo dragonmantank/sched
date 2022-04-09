@@ -3,7 +3,6 @@
 
 declare(strict_types=1);
 
-use DI\Container;
 use DI\ContainerBuilder;
 use Dragonmantank\Sched\Command\ForceProcessCron;
 use Dragonmantank\Sched\Command\GetCronInfo;
@@ -15,8 +14,6 @@ use Dragonmantank\Sched\Command\QueueClear;
 use Dragonmantank\Sched\Command\QueuePeek;
 use Dragonmantank\Sched\Command\RunManager;
 use Dragonmantank\Sched\Component\Console\Application;
-use Pheanstalk\Pheanstalk;
-use Psr\Log\LoggerInterface;
 
 foreach ([__DIR__ . '/../../../autoload.php', __DIR__ . '/../vendor/autoload.php'] as $file) {
     if (file_exists($file)) {

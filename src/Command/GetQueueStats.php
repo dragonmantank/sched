@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Dragonmantank\Sched\Command;
 
 use DI\Annotation\Inject;
+use Dragonmantank\Sched\Queue\QueueService;
 use Pheanstalk\Exception\ServerException;
-use Pheanstalk\Pheanstalk;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -33,7 +32,7 @@ class GetQueueStats extends Command
      */
     public function __construct(
         protected array $config,
-        protected Pheanstalk $pheanstalk
+        protected QueueService $queueService
     ) {
         parent::__construct();
     }
@@ -55,28 +54,28 @@ class GetQueueStats extends Command
         if ($queueName) {
             $headers = ['Variable', 'Value'];
             try {
-                $stats = $this->pheanstalk->statsTube($queueName);
+                $stats = $this->queueService->getStats($queueName);
             } catch (ServerException $e) {
                 $output->writeln('Unable to get stats, tube does not exist');
                 return Command::FAILURE;
             }
 
             $rows = [];
-            foreach ($stats as $key => $value) {
+            foreach ($stats[$queueName] as $key => $value) {
                 $rows[] = [$key, $value];
             }
         } else {
             $headers = ['Queue', 'Stats'];
             foreach ($this->config['queues'] as $queueName => $_) {
                 try {
-                    $stats = $this->pheanstalk->statsTube($queueName);
+                    $stats = $this->queueService->getStats($queueName);
                 } catch (ServerException $e) {
                     $rows[] = [$queueName, 'Tube is empty'];
                     continue;
                 }
-                $rows[] = [$queueName, "current-jobs-ready: " . $stats['current-jobs-ready']];
-                $rows[] = ['', "current-jobs-reserved: " . $stats['current-jobs-reserved']];
-                $rows[] = ['', "current-watching: " . $stats['current-watching']];
+                $rows[] = [$queueName, "current-jobs-ready: " . $stats[$queueName]['current-jobs-ready']];
+                $rows[] = ['', "current-jobs-reserved: " . $stats[$queueName]['current-jobs-reserved']];
+                $rows[] = ['', "current-watching: " . $stats[$queueName]['current-watching']];
             }
         }
 

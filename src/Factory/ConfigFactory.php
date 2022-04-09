@@ -15,6 +15,9 @@ class ConfigFactory
                 'max_workers' => 10,
                 'max_workers_per_tube' => 5,
             ],
+            'messages' => [
+                'jitter' => ['min' => 0, 'max' => 0],
+            ],
             'pheanstalk' => [
                 'host' => '127.0.0.1',
                 'port' => 11300,

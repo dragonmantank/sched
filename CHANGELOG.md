@@ -1,5 +1,18 @@
 # Change Log
 
+## [0.12.0] - 2022-04-09
+
+### Added
+- Added basic wrapper for abstracting the actual queue layers
+- Added beanstalkd message broker for new queue wrapper
+- A "jitter" value can be set via config that allows jobs to be offset by a number of seconds to avoid throttling
+
+### Changed
+- Changed everything to use the new QueueService instead of beanstalkd directly
+
+### Fixed
+- N/A
+
 ## [0.11.0] - 2022-03-08
 ### Added
 - Added `SimplePayloadCron` to make it easier to set up crons that push a static payload into a queue

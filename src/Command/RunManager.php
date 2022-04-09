@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Dragonmantank\Sched\Command;
 
 use Dragonmantank\Sched\LoggingTrait;
+use Dragonmantank\Sched\Queue\QueueService;
 use Pheanstalk\Exception\ServerException;
-use Pheanstalk\Pheanstalk;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Command\Command;
@@ -35,7 +35,7 @@ class RunManager extends Command
      */
     public function __construct(
         protected array $config,
-        protected Pheanstalk $pheanstalk,
+        protected QueueService $queueService,
         protected ?LoggerInterface $logger
     ) {
         parent::__construct();
@@ -68,7 +68,7 @@ class RunManager extends Command
                 }
 
                 try {
-                    $stats = $this->pheanstalk->statsTube($queueName);
+                    $stats = $this->queueService->getStats($queueName)[$queueName];
                 } catch (ServerException $e) {
                     $this->log($output, LogLevel::NOTICE, "[Manager] [" . $queueName . "] Empty or does not exist, skipping");
                     continue;

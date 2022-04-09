@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Dragonmantank\Sched\Command;
 
+use Dragonmantank\Sched\Exception\NoMessageInQueueException;
+use Dragonmantank\Sched\Queue\QueueService;
 use Pheanstalk\Exception\ServerException;
 use Pheanstalk\Pheanstalk;
 use Symfony\Component\Console\Command\Command;
@@ -16,7 +18,7 @@ class QueueClear extends Command
     protected static $defaultName = 'queue:clear';
 
     public function __construct(
-        protected Pheanstalk $pheanstalk
+        protected QueueService $queueService
     ) {
         parent::__construct();
     }
@@ -34,10 +36,11 @@ class QueueClear extends Command
         $queueName = $input->getArgument('queueName');
 
         try {
-            $this->pheanstalk->watch($queueName);
-            while ($job = $this->pheanstalk->reserveWithTimeout(0)) {
-                $this->pheanstalk->delete($job);
+            while ($message = $this->queueService->receiveMessage($queueName, 0)) {
+                $this->queueService->deleteMessage($queueName, $message);
             }
+        } catch (NoMessageInQueueException) {
+            // This is fine, the queue is clear
         } catch (ServerException $e) {
             $output->writeln('Error reading the time');
             return Command::FAILURE;
