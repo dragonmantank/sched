@@ -30,7 +30,7 @@
         "psr-4": {
             "Dragonmantank\\SchedTest\\": "test/"
         }
-    }
+    },
     "authors": [
         {
             "name": "Chris Tankersley",
