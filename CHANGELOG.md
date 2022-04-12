@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.13.0] - 2022-04-12
+
+### Added
+- Paths to additional PHP-DI definition files can be passed to augment custom commands
+
+### Changed
+- N/A
+
+### Fixed
+- N/A
+
 ## [0.12.0] - 2022-04-09
 
 ### Added

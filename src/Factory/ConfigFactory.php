@@ -4,12 +4,23 @@ declare(strict_types=1);
 
 namespace Dragonmantank\Sched\Factory;
 
+use Dotenv\Dotenv;
 use Psr\Container\ContainerInterface;
 
 class ConfigFactory
 {
     public function __invoke(ContainerInterface $c): array
     {
+        try {
+            (Dotenv::createImmutable([
+                __DIR__ . '/../',
+                __DIR__,
+                getcwd(),
+            ]))->load();
+        } catch (\Exception) {
+            // Do nothing, because there may not be a .env file
+        }
+
         $defaultConfig = [
             'manager' => [
                 'max_workers' => 10,
@@ -38,7 +49,7 @@ class ConfigFactory
 
         if ($found) {
             $path = realpath($_SERVER['argv'][$index + 1]);
-            $config = require_once $path;
+            $config = include $path;
             $config['config']['path'] = $path;
             return array_merge($defaultConfig, $config);
         } else {

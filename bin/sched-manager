@@ -22,10 +22,24 @@ foreach ([__DIR__ . '/../../../autoload.php', __DIR__ . '/../vendor/autoload.php
     }
 }
 
-$builder = new ContainerBuilder();
-$builder->useAnnotations(true);
-$builder->addDefinitions(__DIR__ . '/../config/di.php');
-$container = $builder->build();
+$baseBuilder = new ContainerBuilder();
+$baseBuilder->useAnnotations(true);
+$baseBuilder->addDefinitions(__DIR__ . '/../config/di.php');
+$baseContainer = $baseBuilder->build();
+$config = $baseContainer->get('config');
+
+if (isset($config['di'])) {
+    $wrapperBuilder = new ContainerBuilder();
+    $wrapperBuilder->useAnnotations(true);
+    $wrapperBuilder->addDefinitions(__DIR__ . '/../config/di.php');
+    foreach ($config['di'] as $path) {
+        $wrapperBuilder->addDefinitions($path);
+    }
+    $container = $wrapperBuilder->build();
+} else {
+    $container = $baseContainer;
+}
+
 
 $application = new Application();
 $application->add($container->get(RunManager::class));
