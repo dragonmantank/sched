@@ -11,7 +11,7 @@ use Pheanstalk\Pheanstalk;
 use Psr\Log\LoggerInterface;
 
 return [
-    'config' => DI\factory(ConfigFactory::class),
+    'sched-config' => DI\factory(ConfigFactory::class),
     LoggerInterface::class => DI\factory(LoggerInterfaceFactory::class),
     Pheanstalk::class => DI\factory(PheanstalkFactory::class),
     QueueService::class => DI\factory(QueueServiceFactory::class),

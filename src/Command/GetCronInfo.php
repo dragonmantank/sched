@@ -15,7 +15,7 @@ class GetCronInfo extends Command
     protected static $defaultName = 'cron:info';
 
     /**
-     * @Inject({"config": "config"})
+     * @Inject({"config": "sched-config"})
      *
      * @param array{
      *      'pheanstalk': array<string, mixed>,
@@ -24,7 +24,7 @@ class GetCronInfo extends Command
      *          array{'name': string, 'expression': string, 'worker': string|callable}
      *      >,
      *      'queues': array<string, array{'worker': string|callable}>,
-     *      'config': array{'path': string}
+     *      'sched-config': array{'path': string}
      * } $config
      */
     public function __construct(

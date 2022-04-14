@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.14.0] - 2022-04-13
+
+### Added
+- N/A
+
+### Changed
+- Changed sched's DI key from `config` to `sched-config` to avoid collisions with apps that also have a `config` key.
+
+### Fixed
+- N/A
+
 ## [0.13.0] - 2022-04-12
 
 ### Added

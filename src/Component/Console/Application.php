@@ -13,7 +13,7 @@ class Application extends ConsoleApplication
     protected function getDefaultInputDefinition(): InputDefinition
     {
         $definition = parent::getDefaultInputDefinition();
-        $definition->addOption(new InputOption('config', 'c', InputOption::VALUE_REQUIRED, 'Path to a config file'));
+        $definition->addOption(new InputOption('sched-config', 'c', InputOption::VALUE_REQUIRED, 'Path to a config file'));
 
         return $definition;
     }

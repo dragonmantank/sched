@@ -10,7 +10,7 @@ class LoggerInterfaceFactory
 {
     public function __invoke(ContainerInterface $c)
     {
-        $factory = $c->get('config')['logger'] ?? null;
+        $factory = $c->get('sched-config')['logger'] ?? null;
 
         if (is_null($factory)) {
             return null;

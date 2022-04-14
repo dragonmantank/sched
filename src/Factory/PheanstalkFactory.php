@@ -12,9 +12,9 @@ class PheanstalkFactory
     public function __invoke(ContainerInterface $c)
     {
         return Pheanstalk::create(
-            $c->get('config')['pheanstalk']['host'] ?? '127.0.0.1',
-            $c->get('config')['pheanstalk']['port'] ?? 11300,
-            $c->get('config')['pheanstalk']['timeout'] ?? 10,
+            $c->get('sched-config')['pheanstalk']['host'] ?? '127.0.0.1',
+            $c->get('sched-config')['pheanstalk']['port'] ?? 11300,
+            $c->get('sched-config')['pheanstalk']['timeout'] ?? 10,
         );
     }
 }

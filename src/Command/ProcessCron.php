@@ -21,7 +21,7 @@ class ProcessCron extends Command
     protected static $defaultName = 'cron:process';
 
     /**
-     * @Inject({"config": "config"})
+     * @Inject({"config": "sched-config"})
      *
      * @param array{
      *      'pheanstalk': array<string, mixed>,
@@ -30,7 +30,7 @@ class ProcessCron extends Command
      *          array{'name': string, 'expression': string, 'worker': string|callable, 'options': null|array<string, mixed>}
      *      >,
      *      'queues': array<string, array{'worker': string|callable}>,
-     *      'config': array{'path': string}
+     *      'sched-config': array{'path': string}
      * } $config 
      */
     public function __construct(

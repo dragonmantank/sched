@@ -13,6 +13,6 @@ class QueueServiceFactory
 {
     public function __invoke(ContainerInterface $c)
     {
-        return new QueueService($c->get('config'), new Beanstalkd($c->get(Pheanstalk::class)));
+        return new QueueService($c->get('sched-config'), new Beanstalkd($c->get(Pheanstalk::class)));
     }
 }

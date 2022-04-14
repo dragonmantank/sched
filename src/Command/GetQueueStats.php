@@ -18,7 +18,7 @@ class GetQueueStats extends Command
     protected static $defaultName = 'queue:stats';
 
     /**
-     * @Inject({"config": "config"})
+     * @Inject({"config": "sched-config"})
      *
      * @param array{
      *      'pheanstalk': array<string, mixed>,
@@ -27,7 +27,7 @@ class GetQueueStats extends Command
      *          array{'name': string, 'expression': string, 'worker': string|callable}
      *      >,
      *      'queues': array<string, array{'worker': string|callable}>,
-     *      'config': array{'path': string}
+     *      'sched-config': array{'path': string}
      * } $config
      */
     public function __construct(

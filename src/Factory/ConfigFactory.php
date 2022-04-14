@@ -50,7 +50,7 @@ class ConfigFactory
         if ($found) {
             $path = realpath($_SERVER['argv'][$index + 1]);
             $config = include $path;
-            $config['config']['path'] = $path;
+            $config['sched-config']['path'] = $path;
             return array_merge($defaultConfig, $config);
         } else {
             $paths = [
@@ -61,7 +61,7 @@ class ConfigFactory
             foreach ($paths as $possibleLocation) {
                 if (is_file($possibleLocation)) {
                     $config = include $possibleLocation;
-                    $config['config']['path'] = $possibleLocation;
+                    $config['sched-config']['path'] = $possibleLocation;
                     return array_merge($defaultConfig, $config);
                 }
             }

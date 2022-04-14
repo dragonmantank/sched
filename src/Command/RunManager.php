@@ -21,7 +21,7 @@ class RunManager extends Command
     protected static $defaultName = 'manager:run';
 
     /**
-     * @Inject({"config": "config"})
+     * @Inject({"config": "sched-config"})
      *
      * @param array{
      *      'pheanstalk': array<string, mixed>,
@@ -30,7 +30,7 @@ class RunManager extends Command
      *          array{'name': string, 'expression': string, 'worker': string|callable}
      *      >,
      *      'queues': array<string, array{'worker': string|callable}>,
-     *      'config': array{'path': string}
+     *      'sched-config': array{'path': string}
      * } $config
      */
     public function __construct(
@@ -96,7 +96,7 @@ class RunManager extends Command
                             'sched-manager',
                             'queue:process',
                             '--config',
-                            $this->config['config']['path'],
+                            $this->config['sched-config']['path'],
                             '--',
                             $queueName
                         ];
