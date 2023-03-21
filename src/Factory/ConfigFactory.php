@@ -13,7 +13,7 @@ class ConfigFactory
     public function __invoke(ContainerInterface $c): array
     {
         try {
-            (Dotenv::createUnsafeImmutable([
+            (Dotenv::createImmutable([
                 __DIR__ . '/../',
                 __DIR__,
                 getcwd() ?: '',
