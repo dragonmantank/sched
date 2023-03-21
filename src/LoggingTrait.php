@@ -10,7 +10,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 trait LoggingTrait
 {
-    protected function log(OutputInterface $output, $level, string $message)
+    /** @param LogLevel::* $level */
+    protected function log(OutputInterface $output, string $level, string $message): void
     {
         if ($this->logger) {
             $this->logger->log($level, $message);
@@ -46,6 +47,7 @@ trait LoggingTrait
             LogLevel::EMERGENCY,
             LogLevel::ERROR,
         ];
+        
         if (in_array($level, $errorLevels)) {
             $output->writeln($message);
         }

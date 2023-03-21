@@ -11,7 +11,7 @@ use Psr\Container\ContainerInterface;
 
 class QueueServiceFactory
 {
-    public function __invoke(ContainerInterface $c)
+    public function __invoke(ContainerInterface $c): QueueService
     {
         return new QueueService($c->get('sched-config'), new Beanstalkd($c->get(Pheanstalk::class)));
     }

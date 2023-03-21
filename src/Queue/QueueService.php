@@ -9,6 +9,7 @@ use Stringable;
 
 class QueueService
 {
+    /** @param Mixed[] $config */
     public function __construct(
         protected array $config,
         protected MessageBrokerInterface $broker
@@ -25,11 +26,13 @@ class QueueService
         $this->broker->deleteMessage($queueName, $message);
     }
 
+    /** @return Mixed[] */
     public function getMessageStats(string $queueName, Message $message): array
     {
         return $this->broker->getMessageStats($queueName, $message);
     }
 
+    /** @return Mixed[] */
     public function getStats(?string $queueName = null): array
     {
         if (is_string($queueName)) {
@@ -40,7 +43,7 @@ class QueueService
 
         $data = [];
         foreach ($queues as $queueName) {
-            $data[$queueName] = $this->broker->getStats($queueName);
+            $data[$queueName] = $this->broker->getStats((string)$queueName);
         }
 
         return $data;

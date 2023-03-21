@@ -1,5 +1,9 @@
 parameters:
-    level: max
+    # PHP 8.2
+    phpVersion: 80200
+
+    # Almost max but 9+ basically disallows 'mixed' completely
+    level: 8 
     
     paths:
         - src

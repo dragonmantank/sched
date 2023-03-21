@@ -63,13 +63,13 @@ class ForceProcessCron extends Command
                 }
                 $cronJob['options'] = $cronJob['options'] ?? [];
                 $worker(...$cronJob['options']);
-                break;
 
+                $this->log($output, LogLevel::ALERT, $cronJob['name'] . ' found, force running');
                 return Command::SUCCESS;
             }
         }
 
-        $this->log($output, LogLevel::ERROR, $cronJob['name'] . ' found, force running');
+        $this->log($output, LogLevel::ERROR, $name . ' not found');
         return Command::FAILURE;
     }
 }

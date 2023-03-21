@@ -31,7 +31,7 @@ class Beanstalkd implements MessageBrokerInterface
         return (array) $this->pheanstalk->useTube($queueName)->statsJob(new Job($message->id, $message->payload));
     }
 
-    public function getStats(string $queueName = null): array
+    public function getStats(string $queueName): array
     {
 
         $stats = $this->pheanstalk->statsTube($queueName);
@@ -45,7 +45,7 @@ class Beanstalkd implements MessageBrokerInterface
 
     public function peekReady(string $queueName): Message
     {
-        $job = $this->pheanstalk->useTube($queueName)->peekReady($queueName);
+        $job = $this->pheanstalk->useTube($queueName)->peekReady();
         if ($job) {
             return new Message(id: $job->getId(), payload: $job->getData());
         }
