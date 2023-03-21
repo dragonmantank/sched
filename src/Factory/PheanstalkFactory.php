@@ -9,7 +9,7 @@ use Psr\Container\ContainerInterface;
 
 class PheanstalkFactory
 {
-    public function __invoke(ContainerInterface $c)
+    public function __invoke(ContainerInterface $c): Pheanstalk
     {
         return Pheanstalk::create(
             $c->get('sched-config')['pheanstalk']['host'] ?? '127.0.0.1',

@@ -30,7 +30,8 @@ class RunManager extends Command
      *          array{'name': string, 'expression': string, 'worker': string|callable}
      *      >,
      *      'queues': array<string, array{'worker': string|callable}>,
-     *      'sched-config': array{'path': string}
+     *      'sched-config': array{'path': string},
+     *      'manager': array{max_workers:int, max_workers_per_tube:int}
      * } $config
      */
     public function __construct(

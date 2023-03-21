@@ -9,13 +9,14 @@ use Psr\Container\ContainerInterface;
 
 class ConfigFactory
 {
+    /** @return Mixed[] */
     public function __invoke(ContainerInterface $c): array
     {
         try {
             (Dotenv::createImmutable([
                 __DIR__ . '/../',
                 __DIR__,
-                getcwd(),
+                getcwd() ?: '',
             ]))->load();
         } catch (\Exception) {
             // Do nothing, because there may not be a .env file
@@ -40,6 +41,7 @@ class ConfigFactory
         // the config file at this stage, so we brute force it. This is a big issue
         // for the calls that the Manager makes, versus direct invocation.
         $found = false;
+        $index = 0;
         foreach ($_SERVER['argv'] as $index => $value) {
             if ($value === '--config' || $value === '-c') {
                 $found = true;

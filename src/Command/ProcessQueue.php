@@ -67,8 +67,12 @@ class ProcessQueue extends Command
 
             $message = $this->queueService->receiveMessage($queueName);
             try {
-                $this->log($output, LogLevel::DEBUG, 'Received job ' . $message->id . ' in ' . $queueName);
-                $payload = json_decode($message->payload, true);
+                $this->log(
+                    $output, 
+                    LogLevel::DEBUG, 
+                    'Received job ' . $message->id . ' in ' . $queueName
+                );
+                $payload = json_decode((string)$message->payload, true);
                 $worker = $this->config['queues'][$queueName]['worker'];
 
                 if (is_string($worker)) {

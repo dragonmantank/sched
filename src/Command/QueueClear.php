@@ -32,11 +32,11 @@ class QueueClear extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /** @var string */
         $queueName = $input->getArgument('queueName');
 
         try {
-            while ($message = $this->queueService->receiveMessage($queueName, 0)) {
+            while (true) { /** @phpstan-ignore-line — Until Exception */
+                $message = $this->queueService->receiveMessage($queueName, 0);
                 $this->queueService->deleteMessage($queueName, $message);
             }
         } catch (NoMessageInQueueException) {

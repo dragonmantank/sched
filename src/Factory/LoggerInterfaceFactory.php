@@ -8,7 +8,7 @@ use Psr\Container\ContainerInterface;
 
 class LoggerInterfaceFactory
 {
-    public function __invoke(ContainerInterface $c)
+    public function __invoke(ContainerInterface $c): ?\Psr\Log\LoggerInterface
     {
         $factory = $c->get('sched-config')['logger'] ?? null;
 
