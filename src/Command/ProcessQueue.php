@@ -81,34 +81,62 @@ class ProcessQueue extends Command
                 }
 
                 if (!is_callable($worker)) {
-                    throw new \InvalidArgumentException('Worker is not callable');
+                    throw new \InvalidArgumentException("Worker for {$queueName} is not callable");
                 }
 
                 $exitCode = $worker($payload);
 
                 if ($exitCode === 0) {
-                    $this->log($output, LogLevel::DEBUG, 'Finished, deleting job ' . $message->id . ' from ' . $queueName);
+                    $this->log(
+                        $output, 
+                        LogLevel::DEBUG, 
+                        "Finished, deleting job {$message->id} from {$queueName}"
+                    );
                     $this->queueService->deleteMessage($queueName, $message);
                 } else {
-                    $this->log($output, LogLevel::ERROR, 'Worker returned ' . $exitCode . ', rescheduling job for 60 seconds');
+                    $this->log(
+                        $output, 
+                        LogLevel::ERROR, 
+                        "Worker for {$queueName} returned {$exitCode}, rescheduling job"
+                    );
                     $stats = $this->queueService->getMessageStats($queueName, $message);
-                    $this->log($output, LogLevel::DEBUG, 'Job ' . $message->id . ' reserved ' . $stats['reserves'] . ' times');
+                    $this->log(
+                        $output, 
+                        LogLevel::DEBUG, 
+                        "Job {$message->id} reserved {$stats['reserves']} times"
+                    );
 
                     if ($stats['reserves'] > 3) {
-                        $this->log($output, LogLevel::DEBUG, 'Job ' . $message->id . ' buried due to bad worker results');
+                        $this->log(
+                            $output, 
+                            LogLevel::DEBUG, 
+                            "Job {$message->id} buried due to bad worker results"
+                        );
                         $this->queueService->buryMessage($queueName, $message);
                     } else {
-                        $this->queueService->releaseMessage(queueName: $queueName, message: $message, delay: 60);
+                        $this->queueService->releaseMessage(
+                            queueName: $queueName, 
+                            message: $message, 
+                            delay: 60
+                        );
                     }
                 }
             } catch (\Exception $e) {
-                $this->log($output, LogLevel::DEBUG, 'Received error, releasing job ' . $message->id . ' from ' . $queueName);
+                $this->log(
+                    $output, 
+                    LogLevel::DEBUG, 
+                    "Received error, releasing job {$message->id} from {$queueName}"
+                );
                 $this->log($output, LogLevel::ERROR, $e->getMessage());
                 $stats = $this->queueService->getMessageStats($queueName, $message);
-                $this->log($output, LogLevel::DEBUG, 'Job ' . $message->id . ' reserved ' . $stats['reserves'] . ' times');
+                $this->log(
+                    $output, 
+                    LogLevel::DEBUG, 
+                    "Job {$message->id} reserved {$stats['reserves']} times"
+                );
 
                 if ($stats['reserves'] > 3) {
-                    $this->log($output, LogLevel::DEBUG, 'Job ' . $message->id . ' buried');
+                    $this->log($output, LogLevel::DEBUG, "Job {$message->id} buried");
                     $this->queueService->buryMessage($queueName, $message);
                 }
 
